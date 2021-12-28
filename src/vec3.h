@@ -17,9 +17,9 @@ class Vec3 {
   constexpr Vec3() : e{0, 0, 0} {}
   constexpr Vec3(double c0, double c1, double c2) : e{c0, c1, c2} {}
 
-  constexpr double x() const { return e[0]; }
-  constexpr double y() const { return e[1]; }
-  constexpr double z() const { return e[2]; }
+  [[nodiscard]] constexpr double x() const { return e[0]; }
+  [[nodiscard]] constexpr double y() const { return e[1]; }
+  [[nodiscard]] constexpr double z() const { return e[2]; }
 
   constexpr Vec3 operator-() const { return Vec3{-e[0], -e[1], -e[2]}; }
   constexpr double operator[](int i) const { return e[i]; }
@@ -45,9 +45,9 @@ class Vec3 {
     return *this;
   }
 
-  constexpr double lengthSquared() const { return e[0] + e[1] + e[2]; }
+  [[nodiscard]] constexpr double lengthSquared() const { return e[0] + e[1] + e[2]; }
 
-  constexpr double length() const { return std::sqrt(lengthSquared()); }
+  [[nodiscard]] constexpr double length() const { return std::sqrt(lengthSquared()); }
 };
 
 Vec3 operator+(const Vec3& u, const Vec3& v) {
@@ -77,5 +77,6 @@ Vec3 cross(const Vec3& u, const Vec3& v) {
 }
 
 Vec3 unitVector(Vec3 v) { return v / v.length(); }
+
 using Point3 = Vec3;
 using Color = Vec3;
