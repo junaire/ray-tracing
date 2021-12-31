@@ -1,13 +1,16 @@
 #pragma once
+
 #include <fmt/format.h>
 
 #include <cmath>
 
 class Vec3 {
-   double e[3];
+  double e[3];
 
   friend Vec3 operator+(const Vec3& u, const Vec3& v);
   friend Vec3 operator-(const Vec3& u, const Vec3& v);
+  friend Vec3 operator*(const Vec3& u, const Vec3& v);
+  friend Vec3 operator/(const Vec3& u, const Vec3& v);
   friend Vec3 operator*(const Vec3& u, double v);
   friend Vec3 operator/(const Vec3& u, double v);
   friend double dot(const Vec3& u, const Vec3& v);
@@ -25,7 +28,6 @@ class Vec3 {
   constexpr double operator[](int i) const { return e[i]; }
   constexpr double& operator[](int i) { return e[i]; }
 
-  // TODO(Jun): use swap idiom
   constexpr Vec3& operator+=(const Vec3& v) {
     e[0] += v.e[0];
     e[1] += v.e[1];
@@ -45,17 +47,27 @@ class Vec3 {
     return *this;
   }
 
-  [[nodiscard]] constexpr double lengthSquared() const { return e[0] + e[1] + e[2]; }
+  [[nodiscard]] constexpr double lengthSquared() const {
+    return e[0] + e[1] + e[2];
+  }
 
-  [[nodiscard]] constexpr double length() const { return std::sqrt(lengthSquared()); }
+  [[nodiscard]] double length() const { return std::sqrt(lengthSquared()); }
 };
 
 Vec3 operator+(const Vec3& u, const Vec3& v) {
-  return Vec3{u.e[0] + v.e[0], u.e[1] + v.e[1], v.e[2] + v.e[2]};
+  return Vec3{u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]};
 }
 
 Vec3 operator-(const Vec3& u, const Vec3& v) {
-  return Vec3{u.e[0] - v.e[0], u.e[1] - v.e[1], v.e[2] - v.e[2]};
+  return Vec3{u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2]};
+}
+
+Vec3 operator*(const Vec3& u, const Vec3& v) {
+  return Vec3{u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]};
+}
+
+Vec3 operator/(const Vec3& u, const Vec3& v) {
+  return Vec3{u.e[0] / v.e[0], u.e[1] / v.e[1], u.e[2] / v.e[2]};
 }
 
 Vec3 operator*(const Vec3& u, double v) {
@@ -65,7 +77,7 @@ Vec3 operator*(const Vec3& u, double v) {
 Vec3 operator/(const Vec3& u, double v) { return u * (1 / v); }
 
 double dot(const Vec3& u, const Vec3& v) {
-  return u.e[0] * v.e[0] + u.e[1] * v.e[1] + v.e[2] * v.e[2];
+  return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
 }
 
 Vec3 cross(const Vec3& u, const Vec3& v) {
@@ -76,7 +88,7 @@ Vec3 cross(const Vec3& u, const Vec3& v) {
   };
 }
 
-Vec3 unitVector(Vec3 v) { return v / v.length(); }
+Vec3 unitVector(const Vec3& v) { return v / v.length(); }
 
 using Point3 = Vec3;
 using Color = Vec3;
