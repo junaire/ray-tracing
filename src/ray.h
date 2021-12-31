@@ -5,15 +5,15 @@
 class Ray {
  public:
   Ray() = default;
-  Ray(Point3 orgin, Vec3 direction)
-      : orgin_(std::move(orgin)), direction_(std::move(direction)) {}
+  Ray(Point3 origin, Vec3 direction)
+      : origin_(std::move(origin)), direction_(std::move(direction)) {}
 
-  [[nodiscard]] Point3 orgin() const { return orgin_; }
+  [[nodiscard]] Point3 origin() const { return origin_; }
   [[nodiscard]] Vec3 direction() const { return direction_; }
 
-  [[nodiscard]] Point3 at(double t) const { return orgin_ + direction_ * t; }
+  [[nodiscard]] Point3 at(double t) const { return origin_ + direction_ * t; }
 
  private:
-  Point3 orgin_;
+  Point3 origin_;
   Vec3 direction_;
 };
