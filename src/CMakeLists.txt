@@ -2,6 +2,7 @@ SET(SOURCES
 	main.cc
 	sphere.cc
 	hittable_list.cc
+	camera.cc
 )
 
 add_executable(

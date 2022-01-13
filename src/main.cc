@@ -2,7 +2,9 @@
 
 #include <climits>
 #include <cmath>
+#include <cstdlib>
 
+#include "camera.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "ray.h"
@@ -12,6 +14,14 @@
 static constexpr double kinfinity = std::numeric_limits<double>::infinity();
 static constexpr double kpi = 3.14159265358979323846;
 
+inline double randomDouble() {
+  // TODO(Jun): replace this with a better random engine.
+  return std::rand() / (RAND_MAX + 1.0);
+}
+
+inline double randomDouble(double min, double max) {
+  return min + (max - min) * randomDouble();
+}
 Color rayColor(const Ray& ray, const Hittable *world) {
   if (auto record = world->hit(ray, 0, kinfinity)) {
     return 0.5 * (record->normal + Color{1, 1, 1});
@@ -28,6 +38,7 @@ int main() {
   constexpr auto aspectRadio = 16.0 / 9.0;
   constexpr int imageWigth = 400;
   constexpr int imageHeight = static_cast<int>(imageWigth / aspectRadio);
+  constexpr int samplePerPixel = 100;
 
   // world
   auto world = std::make_unique<HittableList>();
@@ -35,29 +46,22 @@ int main() {
   world->add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
 
   // camera
-  constexpr auto viewportHeight = 2.0;
-  constexpr auto viewportWidth = aspectRadio * viewportHeight;
-  constexpr auto focalLength = 1.0;
-
-  constexpr Point3 origin{0, 0, 0};
-  constexpr Vec3 horizontal{viewportWidth, 0, 0};
-  constexpr Vec3 vertical{0, viewportHeight, 0};
-
-  constexpr auto lowerLeftCorner =
-      origin - (horizontal / 2) - (vertical / 2) - Vec3{0, 0, focalLength};
+  Camera camera;
 
   // render
   fmt::print("P3\n{} {}\n255\n", imageWigth, imageHeight);
 
   for (int j = imageHeight - 1; j >= 0; --j) {
     for (int i = 0; i < imageWigth; ++i) {
-      auto u = static_cast<double>(i) / (imageWigth - 1);
-      auto v = static_cast<double>(j) / (imageHeight - 1);
+      Color pixelColor{0, 0, 0};
+      for (int s = 0; s < samplePerPixel; ++s) {
+        auto u = (i + randomDouble()) / (imageWigth - 1);
+        auto v = (j + randomDouble()) / (imageHeight - 1);
 
-      Ray r{origin,
-            lowerLeftCorner + (u * horizontal) + (v * vertical) - origin};
-
-      writeColor(std::cout, rayColor(r, world.get()));
+        Ray ray = camera.getRay(u, v);
+        pixelColor += rayColor(ray, world.get());
+      }
+      writeColor(std::cout, pixelColor, samplePerPixel);
     }
   }
 }
