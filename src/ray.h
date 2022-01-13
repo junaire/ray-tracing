@@ -4,14 +4,16 @@
 
 class Ray {
  public:
-  Ray() = default;
-  Ray(Point3 origin, Vec3 direction)
+  constexpr Ray() = default;
+  constexpr Ray(Point3 origin, Vec3 direction)
       : origin_(std::move(origin)), direction_(std::move(direction)) {}
 
-  [[nodiscard]] Point3 origin() const { return origin_; }
-  [[nodiscard]] Vec3 direction() const { return direction_; }
+  [[nodiscard]] constexpr Point3 origin() const { return origin_; }
+  [[nodiscard]] constexpr Vec3 direction() const { return direction_; }
 
-  [[nodiscard]] Point3 at(double t) const { return origin_ + direction_ * t; }
+  [[nodiscard]] constexpr Point3 at(double t) const {
+    return origin_ + (direction_ * t);
+  }
 
  private:
   Point3 origin_;
