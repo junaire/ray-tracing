@@ -4,7 +4,21 @@
 #include "ray.h"
 #include "vec3.h"
 
+bool hitSphere(const Point3& center, double radius, const Ray& r) {
+  Vec3 oc = r.origin() - center;
+  auto a = dot(r.direction(), r.direction());
+  auto b = 2.0 * dot(oc, r.direction());
+  auto c = dot(oc, oc) - radius * radius;
+  auto discriminant = b * b - 4 * a * c;
+  return discriminant > 0;
+}
+
 Color rayColor(const Ray& ray) {
+  // if in the sphere, change it's color.
+  if (hitSphere(Point3(0, 0, -1), 0.5, ray)) {
+    return {100, 0, 0};
+  }
+
   Vec3 unitDirection = unitVector(ray.direction());
   auto t = 0.5 * (unitDirection.y() + 1.0);
 
