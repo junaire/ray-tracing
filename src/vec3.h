@@ -34,12 +34,12 @@ class Vec3 {
 
   constexpr Vec3& operator/=(const double t) { return *this *= 1 / t; }
 
-  [[nodiscard]] constexpr double length_squared() const {
+  [[nodiscard]] constexpr double lengthSquared() const {
     return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
   }
 
   [[nodiscard]] constexpr double length() const {
-    return std::sqrt(length_squared());
+    return std::sqrt(lengthSquared());
   }
 };
 

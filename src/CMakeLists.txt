@@ -1,5 +1,7 @@
 SET(SOURCES
 	main.cc
+	sphere.cc
+	hittable_list.cc
 )
 
 add_executable(
