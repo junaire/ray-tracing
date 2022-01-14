@@ -104,3 +104,13 @@ inline Vec3 randomInUnitSphere() {
     return p;
   }
 }
+
+inline Vec3 randomUnitVector() { return unitVector(randomInUnitSphere()); }
+
+inline Vec3 randomInHemiSPhere(const Vec3& normal) {
+  Vec3 inUnitSphere{randomInUnitSphere()};
+  if (dot(inUnitSphere, normal) > 0.0) {
+    return inUnitSphere;
+  }
+  return -inUnitSphere;
+}

@@ -15,7 +15,7 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth) {
     return {0, 0, 0};
   }
   if (auto record = world.hit(ray, 0, kinfinity)) {
-    Point3 target = record->p + record->normal + randomInUnitSphere();
+    Point3 target = record->p + randomInHemiSPhere(record->normal);
     return 0.5 * rayColor(Ray{record->p, target - record->p}, world, depth - 1);
   }
 
@@ -31,7 +31,7 @@ int main() {
   constexpr int imageWigth = 400;
   constexpr int imageHeight = static_cast<int>(imageWigth / aspectRadio);
   constexpr int samplePerPixel = 100;
-  constexpr int maxDepth = 10;
+  constexpr int maxDepth = 50;
 
   // world
   HittableList world;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <iostream>
 
 #include "vec3.h"
@@ -19,9 +20,9 @@ void writeColor(std::ostream& os, const Color& pixel, int samplePerPixel) {
   auto b = pixel.z();
 
   auto scale = 1.0 / samplePerPixel;
-  r *= scale;
-  g *= scale;
-  b *= scale;
+  r *= std::sqrt(scale * r);
+  g *= std::sqrt(scale * g);
+  b *= std::sqrt(scale * b);
 
   os << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << " "
      << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << " "
