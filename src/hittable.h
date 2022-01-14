@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 
 #include "ray.h"
 #include "vec3.h"
+
+class Material;
 
 struct HitRecord {
   HitRecord() = default;
@@ -19,6 +22,7 @@ struct HitRecord {
   Vec3 normal;
   double t;
   bool frontFace;
+  std::shared_ptr<Material> matPtr;
 };
 
 class Hittable {
