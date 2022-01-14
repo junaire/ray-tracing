@@ -1,31 +1,22 @@
 #include <fmt/format.h>
 
-#include <climits>
 #include <cmath>
-#include <random>
 
 #include "camera.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "ray.h"
 #include "sphere.h"
+#include "util.h"
 #include "vec3.h"
 
-static constexpr double kinfinity = std::numeric_limits<double>::infinity();
-static constexpr double kpi = 3.14159265358979323846;
-
-inline double randomDouble() {
-  static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-  static std::mt19937 generator;
-  return distribution(generator);
-}
-
-inline double randomDouble(double min, double max) {
-  return min + (max - min) * randomDouble();
-}
-Color rayColor(const Ray& ray, const Hittable& world) {
+Color rayColor(const Ray& ray, const Hittable& world, int depth) {
+  if (depth <= 0) {
+    return {0, 0, 0};
+  }
   if (auto record = world.hit(ray, 0, kinfinity)) {
-    return 0.5 * (record->normal + Color{1, 1, 1});
+    Point3 target = record->p + record->normal + randomInUnitSphere();
+    return 0.5 * rayColor(Ray{record->p, target - record->p}, world, depth - 1);
   }
 
   Vec3 unitDirection = unitVector(ray.direction());
@@ -40,6 +31,7 @@ int main() {
   constexpr int imageWigth = 400;
   constexpr int imageHeight = static_cast<int>(imageWigth / aspectRadio);
   constexpr int samplePerPixel = 100;
+  constexpr int maxDepth = 10;
 
   // world
   HittableList world;
@@ -60,7 +52,7 @@ int main() {
         auto v = (j + randomDouble()) / (imageHeight - 1);
 
         Ray ray = camera.getRay(u, v);
-        pixelColor += rayColor(ray, world);
+        pixelColor += rayColor(ray, world, maxDepth);
       }
       writeColor(std::cout, pixelColor, samplePerPixel);
     }

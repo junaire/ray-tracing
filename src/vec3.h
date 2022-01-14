@@ -3,12 +3,23 @@
 #include <cmath>
 #include <iostream>
 
+#include "util.h"
+
 class Vec3 {
  public:
   double e[3];
 
   constexpr Vec3() : e{0, 0, 0} {}
   constexpr Vec3(double e0, double e1, double e2) : e{e0, e1, e2} {}
+
+  static Vec3 random() {
+    return {randomDouble(), randomDouble(), randomDouble()};
+  }
+
+  static Vec3 random(double min, double max) {
+    return {randomDouble(min, max), randomDouble(min, max),
+            randomDouble(min, max)};
+  }
 
   [[nodiscard]] constexpr double x() const { return e[0]; }
   [[nodiscard]] constexpr double y() const { return e[1]; }
@@ -83,3 +94,13 @@ inline constexpr Vec3 cross(const Vec3& u, const Vec3& v) {
 }
 
 inline constexpr Vec3 unitVector(const Vec3& v) { return v / v.length(); }
+
+inline Vec3 randomInUnitSphere() {
+  while (true) {
+    auto p = Vec3::random(-1, 1);
+    if (p.lengthSquared() >= 1) {
+      continue;
+    }
+    return p;
+  }
+}
