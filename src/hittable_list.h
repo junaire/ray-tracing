@@ -7,12 +7,12 @@
 
 class HittableList : public Hittable {
  public:
-  std::vector<std::shared_ptr<Hittable>> objects;
+  std::vector<std::unique_ptr<Hittable>> objects;
 
   HittableList() = default;
-  explicit HittableList(std::shared_ptr<Hittable> obj) { add(std::move(obj)); }
+  explicit HittableList(std::unique_ptr<Hittable> obj) { add(std::move(obj)); }
 
-  void add(std::shared_ptr<Hittable> obj) { objects.push_back(std::move(obj)); }
+  void add(std::unique_ptr<Hittable> obj) { objects.push_back(std::move(obj)); }
 
   void clear() { objects.clear(); }
 

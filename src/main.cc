@@ -23,8 +23,8 @@ inline double randomDouble() {
 inline double randomDouble(double min, double max) {
   return min + (max - min) * randomDouble();
 }
-Color rayColor(const Ray& ray, const Hittable *world) {
-  if (auto record = world->hit(ray, 0, kinfinity)) {
+Color rayColor(const Ray& ray, const Hittable& world) {
+  if (auto record = world.hit(ray, 0, kinfinity)) {
     return 0.5 * (record->normal + Color{1, 1, 1});
   }
 
@@ -42,9 +42,9 @@ int main() {
   constexpr int samplePerPixel = 100;
 
   // world
-  auto world = std::make_unique<HittableList>();
-  world->add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
-  world->add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+  HittableList world;
+  world.add(std::make_unique<Sphere>(Point3(0, 0, -1), 0.5));
+  world.add(std::make_unique<Sphere>(Point3(0, -100.5, -1), 100));
 
   // camera
   Camera camera;
@@ -60,7 +60,7 @@ int main() {
         auto v = (j + randomDouble()) / (imageHeight - 1);
 
         Ray ray = camera.getRay(u, v);
-        pixelColor += rayColor(ray, world.get());
+        pixelColor += rayColor(ray, world);
       }
       writeColor(std::cout, pixelColor, samplePerPixel);
     }
