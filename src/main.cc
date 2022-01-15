@@ -42,6 +42,8 @@ int main() {
   // world
   HittableList world;
 
+  auto R = std::cos(kpi / 4);
+
   auto ground = std::make_unique<Lambertian>(Color{0.8, 0.8, 0.0});
   auto center = std::make_unique<Lambertian>(Color{0.1, 0.2, 0.5});
   auto left = std::make_unique<Dielectric>(1.5);
@@ -50,14 +52,17 @@ int main() {
   world.add(
       std::make_unique<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, ground.get()));
   world.add(
-      std::make_unique<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, center.get()));
-  world.add(std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, left.get()));
+      std::make_unique<Sphere>(Point3(0.0, 0.0, -1.0), -0.5, center.get()));
   world.add(
-      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, left.get()));
-  world.add(std::make_unique<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, right.get()));
+      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.5, left.get()));
+  world.add(
+      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.45, left.get()));
+  world.add(
+      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.5, right.get()));
 
   // camera
-  Camera camera;
+  Camera camera(Point3{-2, 2, 1}, Point3{0, 0, -1}, Vec3{0, 1, 0}, 90,
+                aspectRadio);
 
   // render
   fmt::print("P3\n{} {}\n255\n", imageWigth, imageHeight);

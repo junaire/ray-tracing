@@ -14,3 +14,4 @@ inline double randomDouble() {
 inline double randomDouble(double min, double max) {
   return min + (max - min) * randomDouble();
 }
+inline double degreesToRadians(double degrees) { return degrees * kpi / 180.0; }
