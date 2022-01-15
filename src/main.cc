@@ -5,10 +5,8 @@
 #include "camera.h"
 #include "color.h"
 #include "hittable.h"
-#include "hittable_list.h"
 #include "material.h"
 #include "ray.h"
-#include "sphere.h"
 #include "util.h"
 #include "vec3.h"
 
@@ -34,40 +32,60 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth) {
 int main() {
   // image
   constexpr auto aspectRadio = 16.0 / 9.0;
-  constexpr int imageWigth = 400;
+  constexpr int imageWigth = 1200;
   constexpr int imageHeight = static_cast<int>(imageWigth / aspectRadio);
-  constexpr int samplePerPixel = 100;
+  constexpr int samplePerPixel = 10;
   constexpr int maxDepth = 50;
 
   // world
   HittableList world;
+  std::unique_ptr<Material> material;
 
-  auto R = std::cos(kpi / 4);
+  auto ground = std::make_unique<Lambertian>(Color{0.5, 0.5, 0.5});
+  world.add(std::make_unique<Sphere>(Point3(0.0, -1000.0, 0.0), 1000.0,
+                                     ground.get()));
 
-  auto ground = std::make_unique<Lambertian>(Color{0.8, 0.8, 0.0});
-  auto center = std::make_unique<Lambertian>(Color{0.1, 0.2, 0.5});
-  auto left = std::make_unique<Dielectric>(1.5);
-  auto right = std::make_unique<Metal>(Color{0.8, 0.6, 0.2}, 0.0);
+  for (int a = -11; a < 11; ++a) {
+    for (int b = -11; b < 11; ++b) {
+      auto chooseMat = randomDouble();
+      Point3 center{a + 0.9 * randomDouble(), 0.2, b + 0.9 * randomDouble()};
 
-  world.add(
-      std::make_unique<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, ground.get()));
-  world.add(
-      std::make_unique<Sphere>(Point3(0.0, 0.0, -1.0), -0.5, center.get()));
-  world.add(
-      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.5, left.get()));
-  world.add(
-      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.45, left.get()));
-  world.add(
-      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.5, right.get()));
+      if ((center - Point3{4, 0.2, 0}).length() > 0.9) {
+        if (chooseMat < 0.8) {
+          auto albedo = Color::random() * Color::random();
+          material = std::make_unique<Lambertian>(albedo);
+          world.add(std::make_unique<Sphere>(center, 0.2, material.get()));
+        } else if (chooseMat < 0.95) {
+          auto albedo = Color::random(0.5, 1);
+          auto fuzz = randomDouble(0, 0.5);
+          material = std::make_unique<Metal>(albedo, fuzz);
+          world.add(std::make_unique<Sphere>(center, 0.2, material.get()));
+
+        } else {
+          material = std::make_unique<Dielectric>(1.5);
+          world.add(std::make_unique<Sphere>(center, 0.2, material.get()));
+        }
+      }
+    }
+  }
+  auto material1 = std::make_unique<Dielectric>(1.5);
+  world.add(std::make_unique<Sphere>(Point3(0, 1, 0), 1.0, material1.get()));
+
+  auto material2 = std::make_unique<Lambertian>(Color(0.4, 0.2, 0.1));
+  world.add(std::make_unique<Sphere>(Point3(-4, 1, 0), 1.0, material2.get()));
+
+  auto material3 = std::make_unique<Metal>(Color(0.7, 0.6, 0.5), 0.0);
+  world.add(std::make_unique<Sphere>(Point3(4, 1, 0), 1.0, material3.get()));
 
   // camera
-  Camera camera(Point3{-2, 2, 1}, Point3{0, 0, -1}, Vec3{0, 1, 0}, 90,
-                aspectRadio);
+  Camera camera(Point3{13, 2, 3}, Point3{0, 0, 0}, Vec3{0, 1, 0}, 20,
+                aspectRadio, 0.1, 10.0);
 
   // render
   fmt::print("P3\n{} {}\n255\n", imageWigth, imageHeight);
 
   for (int j = imageHeight - 1; j >= 0; --j) {
+    std::cerr << "lines remaining " << j << "\n";
     for (int i = 0; i < imageWigth; ++i) {
       Color pixelColor{0, 0, 0};
       for (int s = 0; s < samplePerPixel; ++s) {

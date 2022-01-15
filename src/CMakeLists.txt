@@ -1,8 +1,7 @@
 SET(SOURCES
-	main.cc
-	sphere.cc
-	hittable_list.cc
 	camera.cc
+	hittable.cc
+	main.cc
 	material.cc
 )
 

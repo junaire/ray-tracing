@@ -31,7 +31,7 @@ bool Dielectric::scatter(const Ray& ray, const HitRecord& record,
   double refractionRatio = record.frontFace ? (1.0 / ir) : ir;
   Vec3 unitDirection = unitVector(ray.direction());
 
-  double cosTheta = std::fmin(dot(-unitDirection, record.normal), 0);
+  double cosTheta = std::fmin(dot(-unitDirection, record.normal), 1.0);
   double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
 
   bool cannotRefract = refractionRatio * sinTheta > 1.0;
