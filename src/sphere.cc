@@ -30,6 +30,7 @@ std::optional<HitRecord> Sphere::hit(const Ray& ray, double tmin,
   record.p = ray.at(record.t);
   Vec3 outwardNormal = (record.p - center) / radius;
   record.setFaceNormal(ray, outwardNormal);
+  record.matPtr = matPtr;
 
   return record;
 }

@@ -22,7 +22,7 @@ struct HitRecord {
   Vec3 normal;
   double t;
   bool frontFace;
-  std::shared_ptr<Material> matPtr;
+  Material* matPtr;
 };
 
 class Hittable {

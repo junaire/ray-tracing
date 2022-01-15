@@ -21,6 +21,12 @@ class Vec3 {
             randomDouble(min, max)};
   }
 
+  [[nodiscard]] bool nearZero() const {
+    const auto s = 1e-8;
+    return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) &&
+           (std::fabs(e[2]) < s);
+  }
+
   [[nodiscard]] constexpr double x() const { return e[0]; }
   [[nodiscard]] constexpr double y() const { return e[1]; }
   [[nodiscard]] constexpr double z() const { return e[2]; }
@@ -107,10 +113,14 @@ inline Vec3 randomInUnitSphere() {
 
 inline Vec3 randomUnitVector() { return unitVector(randomInUnitSphere()); }
 
-inline Vec3 randomInHemiSPhere(const Vec3& normal) {
-  Vec3 inUnitSphere{randomInUnitSphere()};
-  if (dot(inUnitSphere, normal) > 0.0) {
-    return inUnitSphere;
-  }
-  return -inUnitSphere;
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+  return v - (2 * dot(v, n) * n);
+}
+
+inline Vec3 refract(const Vec3& uv, const Vec3& n, double eat) {
+  auto cosTheta = std::fmin(dot(-uv, n), 1.0);
+  Vec3 rOutPerp = eat * (uv + cosTheta * n);
+  Vec3 rOutParrallel =
+      -std::sqrt(std::fabs(1.0 - rOutPerp.lengthSquared())) * n;
+  return rOutPerp + rOutParrallel;
 }

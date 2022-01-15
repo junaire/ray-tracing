@@ -4,7 +4,9 @@
 
 #include "camera.h"
 #include "color.h"
+#include "hittable.h"
 #include "hittable_list.h"
+#include "material.h"
 #include "ray.h"
 #include "sphere.h"
 #include "util.h"
@@ -14,9 +16,13 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth) {
   if (depth <= 0) {
     return {0, 0, 0};
   }
-  if (auto record = world.hit(ray, 0, kinfinity)) {
-    Point3 target = record->p + randomInHemiSPhere(record->normal);
-    return 0.5 * rayColor(Ray{record->p, target - record->p}, world, depth - 1);
+  if (auto record = world.hit(ray, 0.001, kinfinity)) {
+    Ray scattered;
+    Color attenuation;
+    if (record->matPtr->scatter(ray, *record, attenuation, scattered)) {
+      return attenuation * rayColor(scattered, world, depth - 1);
+    }
+    return Color{0, 0, 0};
   }
 
   Vec3 unitDirection = unitVector(ray.direction());
@@ -35,8 +41,20 @@ int main() {
 
   // world
   HittableList world;
-  world.add(std::make_unique<Sphere>(Point3(0, 0, -1), 0.5));
-  world.add(std::make_unique<Sphere>(Point3(0, -100.5, -1), 100));
+
+  auto ground = std::make_unique<Lambertian>(Color{0.8, 0.8, 0.0});
+  auto center = std::make_unique<Lambertian>(Color{0.1, 0.2, 0.5});
+  auto left = std::make_unique<Dielectric>(1.5);
+  auto right = std::make_unique<Metal>(Color{0.8, 0.6, 0.2}, 0.0);
+
+  world.add(
+      std::make_unique<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, ground.get()));
+  world.add(
+      std::make_unique<Sphere>(Point3(0.0, 0.0, -1.0), 0.5, center.get()));
+  world.add(std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, left.get()));
+  world.add(
+      std::make_unique<Sphere>(Point3(-1.0, 0.0, -1.0), -0.4, left.get()));
+  world.add(std::make_unique<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, right.get()));
 
   // camera
   Camera camera;
