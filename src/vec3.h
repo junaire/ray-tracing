@@ -124,3 +124,13 @@ inline Vec3 refract(const Vec3& uv, const Vec3& n, double eat) {
       -std::sqrt(std::fabs(1.0 - rOutPerp.lengthSquared())) * n;
   return rOutPerp + rOutParrallel;
 }
+
+inline Vec3 randomInUnitDisk() {
+  while (true) {
+    auto p = Vec3{randomDouble(-1, 1), randomDouble(-1, 1), 0};
+    if (p.lengthSquared() >= 1) {
+      continue;
+    }
+    return p;
+  }
+}
