@@ -23,7 +23,7 @@ class HitRecord {
   Vec3 normal;
   double t;
   bool frontFace;
-  Material* matPtr;
+  std::shared_ptr<Material> matPtr;
 };
 
 class Hittable {
@@ -37,8 +37,8 @@ class Hittable {
 class Sphere : public Hittable {
  public:
   constexpr Sphere() = default;
-  Sphere(Point3 center_, double radius_, Material* matPtr_)
-      : center(std::move(center_)), radius(radius_), matPtr(matPtr_) {}
+  Sphere(Point3 center_, double radius_, std::shared_ptr<Material> matPtr_)
+      : center(std::move(center_)), radius(radius_), matPtr(std::move(matPtr_)) {}
 
   [[nodiscard]] std::optional<HitRecord> hit(const Ray& ray, double tmin,
                                              double tmax) const override;
@@ -46,7 +46,7 @@ class Sphere : public Hittable {
  private:
   Point3 center;
   double radius;
-  Material* matPtr;
+  std::shared_ptr<Material> matPtr;
 };
 
 class HittableList : public Hittable {
