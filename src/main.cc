@@ -15,10 +15,9 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth) {
     return {0, 0, 0};
   }
   if (auto record = world.hit(ray, 0.001, kinfinity)) {
-    Ray scattered;
-    Color attenuation;
-    if (record->matPtr->scatter(ray, *record, attenuation, scattered)) {
-      return attenuation * rayColor(scattered, world, depth - 1);
+    if (auto scatterResult = record->matPtr->scatter(ray, *record)) {
+      return scatterResult->attenuation *
+             rayColor(scatterResult->scattered, world, depth - 1);
     }
     return Color{0, 0, 0};
   }

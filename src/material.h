@@ -1,12 +1,22 @@
 #pragma once
 
+#include <optional>
+
 #include "hittable.h"
 #include "vec3.h"
 
+struct ScatterResult {
+  ScatterResult(Ray ray, Color color)
+      : scattered(std::move(ray)), attenuation(std::move(color)) {}
+
+  Ray scattered;
+  Color attenuation;
+};
+
 class Material {
  public:
-  virtual bool scatter(const Ray& ray, const HitRecord& record,
-                       Color& attenuation, Ray& scattered) const = 0;
+  [[nodiscard]] virtual std::optional<ScatterResult> scatter(
+      const Ray& ray, const HitRecord& record) const = 0;
   virtual ~Material() = default;
 };
 
@@ -14,8 +24,8 @@ class Lambertian : public Material {
  public:
   explicit Lambertian(const Color& color) : albedo(color) {}
 
-  bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation,
-               Ray& scattered) const override;
+  [[nodiscard]] std::optional<ScatterResult> scatter(
+      const Ray& ray, const HitRecord& record) const override;
 
  private:
   Color albedo;
@@ -26,8 +36,8 @@ class Metal : public Material {
   Metal(const Color& color, double fuzzy)
       : albedo(color), fuzz(fuzzy < 1 ? fuzzy : 1) {}
 
-  bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation,
-               Ray& scattered) const override;
+  [[nodiscard]] std::optional<ScatterResult> scatter(
+      const Ray& ray, const HitRecord& record) const override;
 
  private:
   Color albedo;
@@ -38,8 +48,8 @@ class Dielectric : public Material {
  public:
   explicit Dielectric(double indexOfRefraction) : ir(indexOfRefraction) {}
 
-  bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation,
-               Ray& scattered) const override;
+  [[nodiscard]] std::optional<ScatterResult> scatter(
+      const Ray& ray, const HitRecord& record) const override;
 
  private:
   static double reflectance(double cosine, double refIdx);

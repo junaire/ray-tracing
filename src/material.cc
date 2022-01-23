@@ -3,31 +3,29 @@
 #include "util.h"
 
 // Really bad code, needs refactor.
-bool Lambertian::scatter(const Ray& ray, const HitRecord& record,
-                         Color& attenuation, Ray& scattered) const {
+std::optional<ScatterResult> Lambertian::scatter(
+    const Ray& ray, const HitRecord& record) const {
   auto scatterDirection = record.normal + randomUnitVector();
 
   if (scatterDirection.nearZero()) {
     scatterDirection = record.normal;
   }
 
-  scattered = Ray{record.p, scatterDirection};
-  attenuation = albedo;
-
-  return true;
+  return ScatterResult{Ray{record.p, scatterDirection}, albedo};
 }
 
-bool Metal::scatter(const Ray& ray, const HitRecord& record, Color& attenuation,
-                    Ray& scattered) const {
+std::optional<ScatterResult> Metal::scatter(const Ray& ray,
+                                            const HitRecord& record) const {
   Vec3 reflected = reflect(unitVector(ray.direction()), record.normal);
-  scattered = Ray{record.p, reflected + fuzz * randomInUnitSphere()};
-  attenuation = albedo;
-  return dot(scattered.direction(), record.normal) > 0;
+  auto scattered = Ray{record.p, reflected + fuzz * randomInUnitSphere()};
+  if (dot(scattered.direction(), record.normal) > 0) {
+    return ScatterResult{std::move(scattered), albedo};
+  }
+  return std::nullopt;
 }
 
-bool Dielectric::scatter(const Ray& ray, const HitRecord& record,
-                         Color& attenuation, Ray& scattered) const {
-  attenuation = Color{1.0, 1.0, 1.0};
+std::optional<ScatterResult> Dielectric::scatter(
+    const Ray& ray, const HitRecord& record) const {
   double refractionRatio = record.frontFace ? (1.0 / ir) : ir;
   Vec3 unitDirection = unitVector(ray.direction());
 
@@ -44,8 +42,7 @@ bool Dielectric::scatter(const Ray& ray, const HitRecord& record,
     direction = refract(unitDirection, record.normal, refractionRatio);
   }
 
-  scattered = Ray{record.p, direction};
-  return true;
+  return ScatterResult{Ray{record.p, direction}, Color{1.0, 1.0, 1.0}};
 }
 
 double Dielectric::reflectance(double cosine, double refIdx) {
