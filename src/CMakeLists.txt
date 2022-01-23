@@ -10,8 +10,6 @@ add_executable(
 	${SOURCES}
 )
 
-find_package(fmt)
-
 target_link_libraries(
 	ray-tracing
 	PRIVATE
