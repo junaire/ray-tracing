@@ -1,8 +1,7 @@
 #pragma once
-#include <climits>
+
 #include <random>
 
-static constexpr double kinfinity = std::numeric_limits<double>::infinity();
 static constexpr double kpi = 3.14159265358979323846;
 
 inline double randomDouble() {

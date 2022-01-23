@@ -28,9 +28,7 @@ class HitRecord {
 
 class Hittable {
  public:
-  [[nodiscard]] virtual std::optional<HitRecord> hit(const Ray& ray,
-                                                     double tmin,
-                                                     double tmax) const = 0;
+  [[nodiscard]] virtual std::optional<HitRecord> hit(Ray& ray) const = 0;
   virtual ~Hittable() = default;
 };
 
@@ -40,8 +38,7 @@ class Sphere : public Hittable {
   Sphere(Point3 center_, double radius_, std::shared_ptr<Material> matPtr_)
       : center(std::move(center_)), radius(radius_), matPtr(std::move(matPtr_)) {}
 
-  [[nodiscard]] std::optional<HitRecord> hit(const Ray& ray, double tmin,
-                                             double tmax) const override;
+  [[nodiscard]] std::optional<HitRecord> hit(Ray& ray) const override;
 
  private:
   Point3 center;
@@ -58,8 +55,7 @@ class HittableList : public Hittable {
 
   void clear() { objects.clear(); }
 
-  [[nodiscard]] std::optional<HitRecord> hit(const Ray& ray, double tmin,
-                                             double tmax) const override;
+  [[nodiscard]] std::optional<HitRecord> hit(Ray& ray) const override;
 
  private:
   std::vector<std::unique_ptr<Hittable>> objects;

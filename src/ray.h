@@ -1,5 +1,7 @@
 #pragma once
 
+#include <climits>
+
 #include "vec3.h"
 
 class Ray {
@@ -15,7 +17,14 @@ class Ray {
     return origin_ + (direction_ * t);
   }
 
+  static double getRayMin() { return 0.001; }
+
+  [[nodiscard]] double getRayMax() const { return rayMax; }
+  void setRayMax(double max) { rayMax = max; }
+
  private:
   Point3 origin_;
   Vec3 direction_;
+
+  double rayMax{std::numeric_limits<double>::infinity()};
 };

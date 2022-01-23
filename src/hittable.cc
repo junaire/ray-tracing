@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-std::optional<HitRecord> Sphere::hit(const Ray& ray, double tmin,
-                                     double tmax) const {
+std::optional<HitRecord> Sphere::hit(Ray& ray) const {
   Vec3 oc = ray.origin() - center;
   auto a = ray.direction().lengthSquared();
   auto halfb = dot(oc, ray.direction());
@@ -18,9 +17,9 @@ std::optional<HitRecord> Sphere::hit(const Ray& ray, double tmin,
   auto sqrtd = std::sqrt(discriminant);
 
   auto root = (-halfb - sqrtd) / a;
-  if (root < tmin || root > tmax) {
+  if (root < Ray::getRayMin() || root > ray.getRayMax()) {
     root = (-halfb + sqrtd) / a;
-    if (root < tmin || root > tmax) {
+    if (root < Ray::getRayMin() || root > ray.getRayMax()) {
       return std::nullopt;
     }
   }
@@ -35,14 +34,12 @@ std::optional<HitRecord> Sphere::hit(const Ray& ray, double tmin,
   return record;
 }
 
-std::optional<HitRecord> HittableList::hit(const Ray& ray, double tmin,
-                                           double tmax) const {
+std::optional<HitRecord> HittableList::hit(Ray& ray) const {
   std::optional<HitRecord> result{std::nullopt};
-  auto closest = tmax;
 
   for (const auto& obj : objects) {
-    if (auto record = obj->hit(ray, tmin, closest)) {
-      closest = record->t;
+    if (auto record = obj->hit(ray)) {
+      ray.setRayMax(record->t);
       result = record;
     }
   }

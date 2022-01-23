@@ -10,11 +10,11 @@
 #include "util.h"
 #include "vec3.h"
 
-Color rayColor(const Ray& ray, const Hittable& world, int depth) {
+Color rayColor(Ray& ray, const Hittable& world, int depth) {
   if (depth <= 0) {
     return {0, 0, 0};
   }
-  if (auto record = world.hit(ray, 0.001, kinfinity)) {
+  if (auto record = world.hit(ray)) {
     if (auto scatterResult = record->matPtr->scatter(ray, *record)) {
       return scatterResult->attenuation *
              rayColor(scatterResult->scattered, world, depth - 1);
