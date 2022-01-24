@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "material.h"
+
 std::optional<HitRecord> Sphere::hit(Ray& ray) const {
   Vec3 oc = ray.origin() - center;
   auto a = ray.direction().lengthSquared();
@@ -29,7 +31,7 @@ std::optional<HitRecord> Sphere::hit(Ray& ray) const {
   record.p = ray.at(record.t);
   Vec3 outwardNormal = (record.p - center) / radius;
   record.setFaceNormal(ray, outwardNormal);
-  record.matPtr = matPtr;
+  record.matPtr = matPtr.get();
 
   return record;
 }

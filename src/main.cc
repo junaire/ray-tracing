@@ -31,11 +31,10 @@ Color rayColor(Ray& ray, const Hittable& world, int depth) {
 HittableList generateScene() {
   // world
   HittableList world;
-  std::shared_ptr<Material> material;
 
-  auto ground = std::make_shared<Lambertian>(Color{0.5, 0.5, 0.5});
+  auto ground = std::make_unique<Lambertian>(Color{0.5, 0.5, 0.5});
   world.add(std::make_unique<Sphere>(Point3(0.0, -1000.0, 0.0), 1000.0,
-                                     ground));
+                                     std::move(ground)));
 
   for (int a = -11; a < 11; ++a) {
     for (int b = -11; b < 11; ++b) {
@@ -45,29 +44,31 @@ HittableList generateScene() {
       if ((center - Point3{4, 0.2, 0}).length() > 0.9) {
         if (chooseMat < 0.8) {
           auto albedo = Color::random() * Color::random();
-          material = std::make_shared<Lambertian>(albedo);
-          world.add(std::make_unique<Sphere>(center, 0.2, material));
+          world.add(std::make_unique<Sphere>(
+              center, 0.2, std::make_unique<Lambertian>(albedo)));
         } else if (chooseMat < 0.95) {
           auto albedo = Color::random(0.5, 1);
           auto fuzz = randomDouble(0, 0.5);
-          material = std::make_shared<Metal>(albedo, fuzz);
-          world.add(std::make_unique<Sphere>(center, 0.2, material));
+          world.add(std::make_unique<Sphere>(
+              center, 0.2, std::make_unique<Metal>(albedo, fuzz)));
 
         } else {
-          material = std::make_shared<Dielectric>(1.5);
-          world.add(std::make_unique<Sphere>(center, 0.2, material));
+          world.add(std::make_unique<Sphere>(
+              center, 0.2, std::make_unique<Dielectric>(1.5)));
         }
       }
     }
   }
-  auto material1 = std::make_shared<Dielectric>(1.5);
-  world.add(std::make_unique<Sphere>(Point3(0, 1, 0), 1.0, material1));
+  world.add(std::make_unique<Sphere>(Point3(0, 1, 0), 1.0,
+                                     std::make_unique<Dielectric>(1.5)));
 
-  auto material2 = std::make_shared<Lambertian>(Color(0.4, 0.2, 0.1));
-  world.add(std::make_unique<Sphere>(Point3(-4, 1, 0), 1.0, material2));
+  world.add(std::make_unique<Sphere>(
+      Point3(-4, 1, 0), 1.0,
+      std::make_unique<Lambertian>(Color(0.4, 0.2, 0.1))));
 
-  auto material3 = std::make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
-  world.add(std::make_unique<Sphere>(Point3(4, 1, 0), 1.0, material3));
+  world.add(std::make_unique<Sphere>(
+      Point3(4, 1, 0), 1.0,
+      std::make_unique<Metal>(Color(0.7, 0.6, 0.5), 0.0)));
 
   return world;
 }

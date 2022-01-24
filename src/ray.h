@@ -17,7 +17,7 @@ class Ray {
     return origin_ + (direction_ * t);
   }
 
-  static double getRayMin() { return 0.001; }
+  static constexpr double getRayMin() { return 0.0001; }
 
   [[nodiscard]] double getRayMax() const { return rayMax; }
   void setRayMax(double max) { rayMax = max; }
