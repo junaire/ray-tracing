@@ -1,2 +1,11 @@
 # Ray Tracing
-This repo contains practice code from ray tracing in one weekend.
+
+My really stupid ray tracer.
+
+## Build & Run
+```
+mkdir build && cd build
+cmake ../
+make
+bin/ray-tracing > output.ppm # this is the result
+```
